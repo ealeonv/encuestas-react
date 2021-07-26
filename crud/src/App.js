@@ -248,7 +248,7 @@ class App extends React.Component {
             </FormGroup>
           </ModalBody>
 
-          <ModalFooter className='footer'>
+          <ModalFooter>
             <Button
               className="btn btn-danger"
               onClick={() => this.cerrarModalInsertar()}
