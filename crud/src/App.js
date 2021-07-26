@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
@@ -14,12 +13,12 @@ import {
 } from "reactstrap";
 
 const data = [
-  { id: 1, titulo: "Encuesta 1", descripcion: "troleando de pana" },
-  { id: 2, titulo: "Encuesta 2", descripcion: "troleando de pana" },
-  { id: 3, titulo: "Encuesta 3", descripcion: "troleando de pana" },
-  { id: 4, titulo: "Encuesta 4", descripcion: "troleando de pana" },
-  { id: 5, titulo: "Encuesta 5", descripcion: "troleando de pana"},
-  { id: 6, titulo: "Encuesta 6", descripcion: "troleando de pana" },
+  { id: 1, titulo: "Encuesta 1", descripcion: "Encuesta inicial" },
+  { id: 2, titulo: "Encuesta 2", descripcion: "Encuesta número 2" },
+  { id: 3, titulo: "Encuesta 3", descripcion: "Encuesta de prueba 3" },
+  { id: 4, titulo: "Encuesta 4", descripcion: "Encuesta para probar 4" },
+  { id: 5, titulo: "Encuesta 5", descripcion: "Encuestando 5"},
+  { id: 6, titulo: "Encuesta 6", descripcion: "Una encuesta 6" },
 ];
 
 class App extends React.Component {
@@ -59,7 +58,7 @@ class App extends React.Component {
     let contador = 0;
     let arreglo = this.state.data;
     arreglo.map((registro) => {
-      if (dato.id == registro.id) {
+      if (dato.id === registro.id) {
         arreglo[contador].titulo = dato.titulo;
         arreglo[contador].descripcion = dato.descripcion;
       }
@@ -70,11 +69,11 @@ class App extends React.Component {
 
   eliminar = (dato) => {
     let opcion = window.confirm("Estás Seguro que deseas Eliminar el elemento "+dato.id);
-    if (opcion == true) {
+    if (opcion) {
       let contador = 0;
       let arreglo = this.state.data;
       arreglo.map((registro) => {
-        if (dato.id == registro.id) {
+        if (dato.id === registro.id) {
           arreglo.splice(contador, 1);
         }
         contador++;
@@ -207,7 +206,7 @@ class App extends React.Component {
 
         <Modal isOpen={this.state.modalInsertar}>
           <ModalHeader>
-           <div><h3>Insertar titulo</h3></div>
+           <div><h3>Crear nueva encuesta</h3></div>
           </ModalHeader>
 
           <ModalBody>
@@ -226,7 +225,7 @@ class App extends React.Component {
 
             <FormGroup>
               <label>
-                titulo:
+                Titulo:
               </label>
               <input
                 className="form-control"
@@ -238,7 +237,7 @@ class App extends React.Component {
 
             <FormGroup>
               <label>
-                descripcion:
+                Descripcion:
               </label>
               <input
                 className="form-control"
@@ -249,18 +248,18 @@ class App extends React.Component {
             </FormGroup>
           </ModalBody>
 
-          <ModalFooter>
-            <Button
-              color="primary"
-              onClick={() => this.insertar()}
-            >
-              Insertar
-            </Button>
+          <ModalFooter className='footer'>
             <Button
               className="btn btn-danger"
               onClick={() => this.cerrarModalInsertar()}
             >
               Cancelar
+            </Button>
+            <Button
+              color="primary"
+              onClick={() => this.insertar()}
+            >
+              Insertar
             </Button>
           </ModalFooter>
         </Modal>
