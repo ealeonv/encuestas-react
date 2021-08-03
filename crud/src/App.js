@@ -12,18 +12,22 @@ import {
   FormGroup,
   ModalFooter,
 } from "reactstrap";
+import FormSurvey from "./components/FormSurvey.js"
 
 class App extends React.Component {
-  state = {
-    data: [],
-    modalActualizar: false,
-    modalInsertar: false,
-    form: {
-      id: "",
-      titulo: "",
-      descripcion: "",
-    },
-  };
+  constructor(props){
+    super(props);
+    this.state = {
+      data: [],
+      crear: false,
+      showForm: false,
+      form: {
+        id: "",
+        titulo: "",
+        descripcion: "",
+      },
+    };
+  }
 
   componentDidMount() {
     axios.get(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuestas`)
@@ -40,39 +44,16 @@ class App extends React.Component {
   mostrarModalActualizar = (dato) => {
     this.setState({
       form: dato,
-      modalActualizar: true,
+      crear: false,
+      showForm: true,
     });
-  };
-
-  cerrarModalActualizar = () => {
-    this.setState({ modalActualizar: false });
   };
 
   mostrarModalInsertar = () => {
     this.setState({
-      modalInsertar: true,
+      crear: true,
+      showForm: true,
     });
-  };
-
-  cerrarModalInsertar = () => {
-    this.setState({ modalInsertar: false });
-  };
-
-  editar = (dato) => {
-    let contador = 0;
-    let arreglo = this.state.data;
-    arreglo.map((registro) => {
-      if (dato.id === registro.id) {
-        arreglo[contador].titulo = dato.titulo;
-        arreglo[contador].descripcion = dato.descripcion;
-      }
-      contador++;
-    });
-    axios.put(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuesta`, this.state.form)
-    .then(() => {
-      this.setState({ modalActualizar: false });
-      this.componentDidMount();
-    })
   };
 
   eliminar = (dato) => {
@@ -86,21 +67,11 @@ class App extends React.Component {
     }
   };
 
-  insertar= ()=>{
-    axios.post(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuesta`, this.state.form)
-    .then(() => {
-      this.setState({ modalInsertar: false });
-      this.componentDidMount();
-    }) 
-  }
-
-  handleChange = (e) => {
-    this.setState({
-      form: {
-        ...this.state.form,
-        [e.target.name]: e.target.value,
-      },
-    });
+  mostrarForm = (submit) => {
+    this.setState({ showForm: false});
+    if(submit){
+        this.componentDidMount();
+    }
   };
 
   render() {
@@ -142,129 +113,7 @@ class App extends React.Component {
           </Table>
         </Container>
 
-        <Modal isOpen={this.state.modalActualizar}>
-          <ModalHeader>
-           <div><h3>Editar Registro</h3></div>
-          </ModalHeader>
-
-          <ModalBody>
-            <FormGroup>
-              <label>
-               Id:
-              </label>
-
-              <input
-                className="form-control"
-                readOnly
-                type="text"
-                value={this.state.form.id}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <label>
-                titulo:
-              </label>
-              <input
-                className="form-control"
-                name="titulo"
-                type="text"
-                onChange={this.handleChange}
-                value={this.state.form.titulo}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <label>
-                descripcion:
-              </label>
-              <input
-                className="form-control"
-                name="descripcion"
-                type="text"
-                onChange={this.handleChange}
-                value={this.state.form.descripcion}
-              />
-            </FormGroup>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              color="danger"
-              onClick={() => this.cerrarModalActualizar()}
-            >
-              Cancelar
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => this.editar(this.state.form)}
-            >
-              Editar
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-
-
-        <Modal isOpen={this.state.modalInsertar}>
-          <ModalHeader>
-           <div><h3>Crear nueva encuesta</h3></div>
-          </ModalHeader>
-
-          <ModalBody>
-            <FormGroup>
-              <label>
-                Id:
-              </label>
-
-              <input
-                className="form-control"
-                readOnly
-                type="text"
-                value={this.state.form.id}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <label>
-                Titulo:
-              </label>
-              <input
-                className="form-control"
-                name="titulo"
-                type="text"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <label>
-                Descripcion:
-              </label>
-              <input
-                className="form-control"
-                name="descripcion"
-                type="text"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              className="btn btn-danger"
-              onClick={() => this.cerrarModalInsertar()}
-            >
-              Cancelar
-            </Button>
-            <Button
-              color="primary"
-              onClick={() => this.insertar()}
-            >
-              Crear
-            </Button>
-          </ModalFooter>
-        </Modal>
+        {this.state.showForm && <FormSurvey crear={this.state.crear} form={this.state.form} showForm={this.mostrarForm}></FormSurvey>}
       </>
     );
   }
