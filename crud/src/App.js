@@ -1,4 +1,5 @@
 import React from "react";
+import axios from 'axios';
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
@@ -12,18 +13,9 @@ import {
   ModalFooter,
 } from "reactstrap";
 
-const data = [
-  { id: 1, titulo: "Encuesta 1", descripcion: "Encuesta inicial" },
-  { id: 2, titulo: "Encuesta 2", descripcion: "Encuesta número 2" },
-  { id: 3, titulo: "Encuesta 3", descripcion: "Encuesta de prueba 3" },
-  { id: 4, titulo: "Encuesta 4", descripcion: "Encuesta para probar 4" },
-  { id: 5, titulo: "Encuesta 5", descripcion: "Encuestando 5"},
-  { id: 6, titulo: "Encuesta 6", descripcion: "Una encuesta 6" },
-];
-
 class App extends React.Component {
   state = {
-    data: data,
+    data: [],
     modalActualizar: false,
     modalInsertar: false,
     form: {
@@ -32,6 +24,18 @@ class App extends React.Component {
       descripcion: "",
     },
   };
+
+  componentDidMount() {
+    axios.get(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuestas`)
+      .then(res => {
+        const data = res.data.body;
+        this.setState({ data });
+        let idOrdenadas = data.map(o => o.id);
+        idOrdenadas.sort()
+        let form = { id: idOrdenadas[idOrdenadas.length - 1] + 1, description: '', titulo: '' }
+        this.setState({ form: form })
+      })
+  }
 
   mostrarModalActualizar = (dato) => {
     this.setState({
@@ -64,31 +68,30 @@ class App extends React.Component {
       }
       contador++;
     });
-    this.setState({ data: arreglo, modalActualizar: false });
+    axios.put(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuesta`, this.state.form)
+    .then(() => {
+      this.setState({ modalActualizar: false });
+      this.componentDidMount();
+    })
   };
 
   eliminar = (dato) => {
     let opcion = window.confirm("Estás Seguro que deseas Eliminar el elemento "+dato.id);
     if (opcion) {
-      let contador = 0;
-      let arreglo = this.state.data;
-      arreglo.map((registro) => {
-        if (dato.id === registro.id) {
-          arreglo.splice(contador, 1);
-        }
-        contador++;
-      });
-      this.setState({ data: arreglo, modalActualizar: false });
+      axios.delete(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuesta`, {data: {"id": dato.id}})
+      .then(() => {
+        this.setState({ modalActualizar: false });
+        this.componentDidMount();
+      })
     }
   };
 
   insertar= ()=>{
-    let valorNuevo= {...this.state.form};
-    let len = this.state.data.length-1;
-    valorNuevo.id=this.state.data[len].id + 1;
-    let lista= this.state.data;
-    lista.push(valorNuevo);
-    this.setState({ modalInsertar: false, data: lista });
+    axios.post(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuesta`, this.state.form)
+    .then(() => {
+      this.setState({ modalInsertar: false });
+      this.componentDidMount();
+    }) 
   }
 
   handleChange = (e) => {
@@ -101,7 +104,6 @@ class App extends React.Component {
   };
 
   render() {
-
     return (
       <>
         <Container>
@@ -188,16 +190,16 @@ class App extends React.Component {
 
           <ModalFooter>
             <Button
-              color="primary"
-              onClick={() => this.editar(this.state.form)}
-            >
-              Editar
-            </Button>
-            <Button
               color="danger"
               onClick={() => this.cerrarModalActualizar()}
             >
               Cancelar
+            </Button>
+            <Button
+              color="primary"
+              onClick={() => this.editar(this.state.form)}
+            >
+              Editar
             </Button>
           </ModalFooter>
         </Modal>
@@ -219,7 +221,7 @@ class App extends React.Component {
                 className="form-control"
                 readOnly
                 type="text"
-                value={this.state.data[this.state.data.length-1].id + 1}
+                value={this.state.form.id}
               />
             </FormGroup>
 
@@ -259,7 +261,7 @@ class App extends React.Component {
               color="primary"
               onClick={() => this.insertar()}
             >
-              Insertar
+              Crear
             </Button>
           </ModalFooter>
         </Modal>
