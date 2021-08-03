@@ -2,9 +2,7 @@ import React from "react";
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-  Table,
   Button,
-  Container,
   Modal,
   ModalHeader,
   ModalBody,
@@ -58,7 +56,9 @@ class FormSurvey extends React.Component {
   };
 
   insertar= ()=>{
-    axios.post(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuesta`, this.state.form)
+    axios.post(`https://8wrbo7hv3a.execute-api.us-east-1.amazonaws.com/Encuesta/encuesta`, { id: this.props.nextId, 
+                                                                                             descripcion: this.state.form.descripcion, 
+                                                                                             titulo: this.state.form.titulo })
     .then(() => {
       this.setState({ modalInsertar: false });
       this.props.showForm(true);
@@ -156,7 +156,7 @@ class FormSurvey extends React.Component {
                 className="form-control"
                 readOnly
                 type="text"
-                value={this.state.form.id}
+                value={this.props.nextId}
               />
             </FormGroup>
 

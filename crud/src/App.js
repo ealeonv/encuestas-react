@@ -5,12 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import {
   Table,
   Button,
-  Container,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  FormGroup,
-  ModalFooter,
+  Container
 } from "reactstrap";
 import FormSurvey from "./components/FormSurvey.js"
 
@@ -26,6 +21,7 @@ class App extends React.Component {
         titulo: "",
         descripcion: "",
       },
+      next_id: 0
     };
   }
 
@@ -36,8 +32,8 @@ class App extends React.Component {
         this.setState({ data });
         let idOrdenadas = data.map(o => o.id);
         idOrdenadas.sort()
-        let form = { id: idOrdenadas[idOrdenadas.length - 1] + 1, description: '', titulo: '' }
-        this.setState({ form: form })
+        let form = { id: idOrdenadas[idOrdenadas.length - 1] + 1, descripcion: '', titulo: '' }
+        this.setState({ form: form, next_id: form.id })
       })
   }
 
@@ -104,7 +100,7 @@ class App extends React.Component {
                       onClick={() => this.mostrarModalActualizar(dato)}
                     >
                       Editar
-                    </Button>{" "}
+                    </Button>
                     <Button color="danger" onClick={()=> this.eliminar(dato)}>Eliminar</Button>
                   </td>
                 </tr>
@@ -113,7 +109,11 @@ class App extends React.Component {
           </Table>
         </Container>
 
-        {this.state.showForm && <FormSurvey crear={this.state.crear} form={this.state.form} showForm={this.mostrarForm}></FormSurvey>}
+        {this.state.showForm && <FormSurvey crear={this.state.crear} 
+                                            form={this.state.form} 
+                                            showForm={this.mostrarForm} 
+                                            nextId={this.state.next_id}>
+                                              </FormSurvey>}
       </>
     );
   }
